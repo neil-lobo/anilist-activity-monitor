@@ -1,4 +1,6 @@
-import { fetch, JSON, log } from ".";
+import { JSON } from ".";
+import { fetch } from "./fetch";
+import { debugLog, log } from "./logs";
 import { settings } from "./settings";
 
 const GQL_QUERY = `
@@ -96,6 +98,7 @@ export async function getActivities(): Promise<ActivityItem[]> {
   }
 
   try {
+    debugLog("pre fetch");
     const res = await fetch("https://graphql.anilist.co", {
       method: c2.HTTPMethod.Post,
       headers: {
@@ -106,6 +109,7 @@ export async function getActivities(): Promise<ActivityItem[]> {
       timeout: 5_000,
       body: JSON.stringify({ query: GQL_QUERY }),
     });
+    debugLog("post fetch");
 
     if (res.status !== 200) {
       throw new Error(`Unsuccessful response fron AniList API (${res.status})`);

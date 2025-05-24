@@ -1,4 +1,4 @@
-import { log, randomId } from ".";
+import { randomId } from ".";
 
 const intervals: Set<string> = new Set();
 

@@ -1,6 +1,7 @@
 import { fs, JSON } from ".";
 
-export type Setting = { [k: string]: string | string[] | number };
+export type SettingPrimimive = string | number | boolean;
+export type Setting = { [k: string]: SettingPrimimive | SettingPrimimive[] };
 
 class Settings<K extends Setting> {
   initialized: boolean;
@@ -14,6 +15,7 @@ class Settings<K extends Setting> {
     this.loadSettings();
   }
 
+  // TODO: this throws
   /**
    * Write empty settings file if there is none found
    */
@@ -76,6 +78,7 @@ class Settings<K extends Setting> {
    */
   loadSettings() {
     try {
+      // TODO: let this throw
       this.keys = JSON.parse(fs.read("settings.json"));
     } catch (err) {
       this.keys = {};
@@ -95,4 +98,5 @@ export const settings = new Settings<{
   token: string;
   broadcastChannels: string[];
   interval: number;
+  debug: boolean;
 }>();

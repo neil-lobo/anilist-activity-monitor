@@ -1,4 +1,4 @@
-import { fs, message } from ".";
+import { message } from ".";
 import { CommandError } from "./command";
 import { settings } from "./settings";
 

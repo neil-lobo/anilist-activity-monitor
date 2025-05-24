@@ -1,4 +1,4 @@
-import { fs, log, JSON, message } from "./utils";
+import { JSON, message } from "./utils";
 import {
   ActivityItem,
   constructUpdateMessage,
@@ -14,6 +14,7 @@ import {
 } from "./utils/broadcast";
 import { Command, CommandContext, CommandError } from "./utils/command";
 import { clearInterval, setInterval } from "./utils/interval";
+import { log } from "./utils/logs";
 import { settings } from "./utils/settings";
 
 let currentActivity: ActivityItem[] | undefined;
@@ -226,10 +227,12 @@ function registerEvents() {
         for (const message of err.extraMessages) {
           reply(message);
         }
+      } else if (err instanceof Error) {
+        reply(`Unexpected error: ${err.message}`);
       } else {
-        log("unexpected error:");
-        log(JSON.stringify(err));
-        reply(`Unexpected error: ${(err as Error).message}`);
+        // err may be a string, this code produces a string error:
+        // https://github.com/Chatterino/chatterino2/blob/deed1061b52745d95881ee7578eb3fd01434e6ce/src/controllers/plugins/api/ChannelRef.cpp#L28-L30
+        reply("Unexpected error: Unknown error");
       }
     });
   });

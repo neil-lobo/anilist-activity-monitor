@@ -1,4 +1,5 @@
-import { JSON, log } from ".";
+import { JSON } from ".";
+import { log } from "./logs";
 
 export class CommandError extends Error {
   extraMessages: string[];
