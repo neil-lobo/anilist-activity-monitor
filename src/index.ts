@@ -14,6 +14,7 @@ import {
 } from "./utils/broadcast";
 import { Command, CommandContext, CommandError } from "./utils/command";
 import { clearInterval, setInterval } from "./utils/interval";
+import { settings } from "./utils/settings";
 
 let currentActivity: ActivityItem[] | undefined;
 let interval: string | undefined;
@@ -41,7 +42,7 @@ const COMMAND = new Command({
           command: "set",
           args: ["token"],
           action: async (ctx, { token }) => {
-            fs.write("token", token);
+            settings.setSetting("token", token);
 
             ctx.reply("Token set!");
 

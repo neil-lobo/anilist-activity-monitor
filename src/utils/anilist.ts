@@ -1,4 +1,5 @@
-import { fetch, fs, JSON, log } from ".";
+import { fetch, JSON, log } from ".";
+import { settings } from "./settings";
 
 const GQL_QUERY = `
 query {
@@ -87,10 +88,8 @@ export type GetActivityResponse = {
 };
 
 export async function getActivities(): Promise<ActivityItem[]> {
-  let token: string | undefined;
-  try {
-    token = fs.read("token");
-  } catch (err) {
+  const token = settings.getSetting("token");
+  if (!token) {
     throw new Error(
       "Plugin not authenticed with Anilist. Generate a token with /anilist token get & set your token with /anilist token set"
     );
