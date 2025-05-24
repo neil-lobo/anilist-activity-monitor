@@ -1,6 +1,8 @@
 import { fs, JSON } from ".";
 
-class Settings<K> {
+export type Setting = { [k: string]: string | string[] };
+
+class Settings<K extends Setting> {
   initialized: boolean;
   keys: Partial<K>;
 
@@ -29,7 +31,22 @@ class Settings<K> {
    * @returns Copy of setting value
    */
   getSetting<T extends keyof typeof this.keys>(key: T): (typeof this.keys)[T] {
-    return Object.assign({}, this.keys[key]);
+    const val = this.keys[key];
+
+    if (!val) {
+      // null | undefined
+      return val;
+    } else if (Array.isArray(val)) {
+      // is array
+      return [...val] as K[T];
+    }
+
+    // if `Setting` is ever extended to have nested objects then a custom object detector
+    // will have to be made. typeof val === "object" does not seem to work when transpiled
+    // to lua
+
+    // is primative
+    return val;
   }
 
   /**
