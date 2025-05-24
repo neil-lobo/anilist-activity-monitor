@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Chatterino/chatterino2/master/docs/plugin-info.schema.json",
+  "name": "AniList Activity Monitor",
+  "description": "AniList activity notifcations in Chatterino",
+  "authors": ["2547techno"],
+  "tags": [],
+  "version": "0.0.1",
+  "license": "MIT",
+  "permissions": [
+    {
+      "type": "Network"
+    },
+    {
+      "type": "FilesystemWrite"
+    }
+  ]
+}
