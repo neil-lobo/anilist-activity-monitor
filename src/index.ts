@@ -20,6 +20,8 @@ let currentActivity: ActivityItem[] | undefined;
 let interval: string | undefined;
 let starting = false;
 
+const DEFAULT_INTERVAL_SEC = 30;
+
 // TODO: this usage is ugly
 const COMMAND = new Command({
   command: "anilist",
@@ -43,9 +45,7 @@ const COMMAND = new Command({
           args: ["token"],
           action: async (ctx, { token }) => {
             settings.setSetting("token", token);
-
             ctx.reply("Token set!");
-
             await startup();
           },
         }),
@@ -89,6 +89,49 @@ const COMMAND = new Command({
     }),
     new Command({
       parent,
+      command: "interval",
+      subcommands: (parent) => [
+        new Command({
+          parent,
+          command: "get",
+          action: (ctx) => {
+            const interval = settings.getSetting("interval");
+            ctx.reply(`Interval time is set to: ${interval}s`);
+          },
+        }),
+        new Command({
+          parent,
+          command: "set",
+          args: ["number"],
+          action: async (ctx, { number }) => {
+            const interval = parseInt(number);
+
+            if (isNaN(interval)) {
+              throw new CommandError("Argument is not a valid number");
+            }
+
+            if (!(interval >= 10 && interval <= 300)) {
+              throw new CommandError("Number must be in the range 10-300");
+            }
+
+            settings.setSetting("interval", interval);
+            ctx.reply(`Set interval time to ${interval}s`);
+            await startup();
+          },
+        }),
+        new Command({
+          parent,
+          command: "reset",
+          action: async (ctx) => {
+            settings.setSetting("interval", DEFAULT_INTERVAL_SEC);
+            ctx.reply(`Reset interval time to ${DEFAULT_INTERVAL_SEC}s`);
+            await startup();
+          },
+        }),
+      ],
+    }),
+    new Command({
+      parent,
       command: "status",
       action: async (ctx) => {
         try {
@@ -122,6 +165,8 @@ async function startup() {
       clearInterval(interval);
     }
 
+    const intervalSeconds =
+      settings.getSetting("interval") ?? DEFAULT_INTERVAL_SEC;
     interval = setInterval(async () => {
       try {
         // get updates
@@ -146,8 +191,7 @@ async function startup() {
           clearInterval(interval);
         }
       }
-      // }, 10_000);
-    }, 30_000 /* every 30s */);
+    }, intervalSeconds * 1000 /* every 30s */);
 
     broadcast("Loaded");
   } finally {

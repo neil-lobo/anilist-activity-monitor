@@ -1,6 +1,6 @@
 import { fs, JSON } from ".";
 
-export type Setting = { [k: string]: string | string[] };
+export type Setting = { [k: string]: string | string[] | number };
 
 class Settings<K extends Setting> {
   initialized: boolean;
@@ -33,7 +33,7 @@ class Settings<K extends Setting> {
   getSetting<T extends keyof typeof this.keys>(key: T): (typeof this.keys)[T] {
     const val = this.keys[key];
 
-    if (!val) {
+    if (val === undefined) {
       // null | undefined
       return val;
     } else if (Array.isArray(val)) {
@@ -94,4 +94,5 @@ class Settings<K extends Setting> {
 export const settings = new Settings<{
   token: string;
   broadcastChannels: string[];
+  interval: number;
 }>();
