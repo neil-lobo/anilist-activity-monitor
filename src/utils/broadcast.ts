@@ -1,21 +1,20 @@
 import { fs, message } from ".";
+import { CommandError } from "./command";
+import { settings } from "./settings";
+
+// TODO: jsdoc
 
 export const broadcastChannels: Set<c2.Channel> = new Set();
 
 function getBroadcastChannels(): Set<c2.Channel> {
   const channels: Set<c2.Channel> = new Set();
 
-  const raw = fs.read("channels");
-  raw
-    .split("\n")
-    .map((c) => c.trim())
-    .filter((c) => c !== "")
-    .forEach((c) => {
-      const _channel = c2.Channel.by_name(c);
-      if (!_channel) return;
+  (settings.getSetting("broadcastChannels") ?? []).forEach((c) => {
+    const _channel = c2.Channel.by_name(c);
+    if (!_channel) return;
 
-      channels.add(_channel);
-    });
+    channels.add(_channel);
+  });
 
   return channels;
 }
@@ -32,31 +31,36 @@ export function syncBroadcastChannels() {
   }
 }
 
-function flushBroadcastChannels() {
-  fs.write(
-    "channels",
-    Array.from(broadcastChannels)
-      .map((c) => c.get_name())
-      .join("\n")
-  );
-}
+export function addBroadcastChannel(channelName: string) {
+  channelName = channelName.toLowerCase();
 
-export function addBroadcastChannel(channelName: string): boolean {
   const channel = c2.Channel.by_name(channelName);
-  if (!channel) return false;
-  broadcastChannels.add(channel);
-
-  try {
-    flushBroadcastChannels();
-  } catch (err) {
-    broadcastChannels.delete(channel);
-    return false;
+  if (!channel) {
+    throw new CommandError(
+      "Channel must be opened in chatterino to be added as a broadcast channel"
+    );
   }
 
-  return true;
+  const channelNames = Array.from(broadcastChannels).map((c) => c.get_name());
+
+  if (channelNames.includes(channelName)) {
+    throw new CommandError("Channel is already a broadcast channel");
+  }
+
+  broadcastChannels.add(channel);
+  channelNames.push(channelName);
+
+  try {
+    settings.setSetting("broadcastChannels", channelNames);
+  } catch (err) {
+    broadcastChannels.delete(channel);
+    throw err;
+  }
 }
 
 export function removeBroadcastChannel(channelName: string) {
+  channelName = channelName.toLowerCase();
+
   let channel: c2.Channel | undefined;
 
   for (const _channel of broadcastChannels) {
@@ -66,13 +70,14 @@ export function removeBroadcastChannel(channelName: string) {
   }
 
   if (!channel) {
-    return;
+    throw new CommandError("Channel is not a broadcast channel");
   }
 
   broadcastChannels.delete(channel);
+  const channelNames = Array.from(broadcastChannels).map((c) => c.get_name());
 
   try {
-    flushBroadcastChannels();
+    settings.setSetting("broadcastChannels", channelNames);
   } catch (err) {
     broadcastChannels.add(channel);
   }

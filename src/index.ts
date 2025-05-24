@@ -58,15 +58,8 @@ const COMMAND = new Command({
           command: "add",
           args: ["channel"],
           action: (ctx, { channel }) => {
-            const added = addBroadcastChannel(channel);
-
-            if (added) {
-              ctx.reply(`Added ${channel} to broadcast list`);
-            } else {
-              ctx.reply(
-                `Unable to add channel. Make sure you have the channel opened in Chatterino`
-              );
-            }
+            addBroadcastChannel(channel);
+            ctx.reply(`Added ${channel} to broadcast list`);
           },
         }),
         new Command({
