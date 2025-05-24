@@ -8,9 +8,7 @@ import {
 import {
   addBroadcastChannel,
   broadcast,
-  broadcastChannels,
   removeBroadcastChannel,
-  syncBroadcastChannels,
 } from "./utils/broadcast";
 import { Command, CommandContext, CommandError } from "./utils/command";
 import { clearInterval, setInterval } from "./utils/interval";
@@ -62,6 +60,7 @@ const COMMAND = new Command({
           args: ["channel"],
           action: (ctx, { channel }) => {
             addBroadcastChannel(channel);
+
             ctx.reply(`Added ${channel} to broadcast list`);
           },
         }),
@@ -79,9 +78,16 @@ const COMMAND = new Command({
           parent,
           command: "list",
           action: (ctx) => {
+            const channels = settings.getSetting("broadcastChannels") ?? [];
+
             ctx.reply(
-              `Broadcast channels: ${Array.from(broadcastChannels)
-                .map((c) => c.get_name())
+              `Broadcast channels: ${channels
+                .map((c) => {
+                  const channel = c2.Channel.by_name(c);
+                  const valid = channel && channel.is_valid();
+
+                  return `${c}${valid ? "" : " (closed)"}`;
+                })
                 .join(", ")}`
             );
           },
@@ -331,7 +337,6 @@ function registerEvents() {
   });
 }
 
-syncBroadcastChannels();
 registerEvents();
 startup().catch((err) => {
   log(JSON.stringify(err));
