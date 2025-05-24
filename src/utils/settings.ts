@@ -59,7 +59,7 @@ class Settings<K extends Setting> {
     key: T,
     value: Exclude<(typeof this.keys)[T], undefined>
   ) {
-    const preVal = this.keys[key];
+    const preVal = this.getSetting(key);
 
     try {
       this.keys[key] = value;
