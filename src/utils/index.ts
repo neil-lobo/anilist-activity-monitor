@@ -17,6 +17,8 @@ export function message(msg: string): string {
   return `[AniList] ${msg}`;
 }
 
+// TODO: pure JS impl
+// in the lua impl, encode('{}') results in '[]'
 export const JSON = {
   stringify: encode,
   parse: decode,

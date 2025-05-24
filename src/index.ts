@@ -19,6 +19,7 @@ let currentActivity: ActivityItem[] | undefined;
 let interval: string | undefined;
 let starting = false;
 
+// TODO: this usage is ugly
 const COMMAND = new Command({
   command: "anilist",
   subcommands: (parent) => [
