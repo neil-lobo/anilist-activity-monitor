@@ -97,11 +97,10 @@ const COMMAND = new Command({
       command: "status",
       action: async (ctx) => {
         try {
-          // TODO: test when token is invalid and missing
           await getActivity();
-          ctx.reply("Successfully fetched AniList activity!");
+          ctx.reply("Status: Connected");
         } catch (err) {
-          ctx.reply((err as Error).message);
+          ctx.reply(`Error: ${(err as Error).message}`);
         }
       },
     }),
