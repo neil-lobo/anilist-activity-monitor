@@ -112,6 +112,7 @@ export async function getActivities(): Promise<ActivityItem[]> {
     debugLog("post fetch");
 
     if (res.status !== 200) {
+      log(`status: ${res.status} | error: ${res.error}`);
       throw new Error(`Unsuccessful response fron AniList API (${res.status})`);
     }
 
