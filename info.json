@@ -3,9 +3,10 @@
   "name": "AniList Activity Monitor",
   "description": "AniList activity notifcations in Chatterino",
   "authors": ["2547techno"],
-  "tags": [],
+  "tags": ["anilist"],
   "version": "0.0.1",
   "license": "MIT",
+  "homepage": "https://github.com/neil-lobo/anilist-activity-monitor",
   "permissions": [
     {
       "type": "Network"
