@@ -128,8 +128,6 @@ export async function getActivities(): Promise<ActivityItem[]> {
   }
 }
 
-// [19504] chatterino.lua: [anilist-activity-monitor:AniList Activity Monitor] {"message":"unexpected type 'userdata'","name":"Lua Error"}
-
 export function newAcitivies(
   old: ActivityItem[],
   curr: ActivityItem[]
@@ -145,4 +143,22 @@ export function newAcitivies(
   }
 
   return out;
+}
+
+export function constructUpdateMessage(activity: ActivityItem): string {
+  const msgParts: string[] = [];
+
+  msgParts.push(activity.user.name);
+  msgParts.push(activity.status);
+  if (
+    activity.status === "read chapter" ||
+    activity.status === "watched episode"
+  ) {
+    msgParts.push(activity.progress);
+    msgParts.push("of");
+  }
+  msgParts.push(activity.media.title.userPreferred);
+
+  const msg = msgParts.join(" ");
+  return msg;
 }

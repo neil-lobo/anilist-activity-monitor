@@ -10,6 +10,8 @@ export type CommandReply = {
   reply(_message: string): void;
 };
 
+export type CommandContext = c2.CommandContext & CommandReply;
+
 export type CommandParams = {
   command: string;
   parent?: Command;
@@ -21,7 +23,7 @@ export type CommandParams = {
   | {
       args?: string[];
       action: (
-        ctx: c2.CommandContext & CommandReply,
+        ctx: CommandContext,
         args: { [k: string]: string }
       ) => void | Promise<void>;
     }
@@ -33,7 +35,7 @@ export class Command {
     this.params = params;
   }
 
-  async run(ctx: c2.CommandContext & CommandReply, args: string[]) {
+  async run(ctx: CommandContext, args: string[]) {
     if ("subcommands" in this.params) {
       if (args.length === 0) {
         throw new CommandError(
