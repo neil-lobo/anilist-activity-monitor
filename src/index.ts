@@ -179,6 +179,9 @@ function registerEvents() {
 
       if (err instanceof CommandError) {
         reply(`Command error: ${err.message}`);
+        for (const message of err.extraMessages) {
+          reply(message);
+        }
       } else {
         log("unexpected error:");
         log(JSON.stringify(err));

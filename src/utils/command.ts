@@ -1,8 +1,10 @@
 import { JSON, log } from ".";
 
 export class CommandError extends Error {
-  constructor(message?: string) {
+  extraMessages: string[];
+  constructor(message?: string, extraMessages?: string[]) {
     super(message);
+    this.extraMessages = extraMessages ?? [];
   }
 }
 
@@ -39,9 +41,10 @@ export class Command {
     if ("subcommands" in this.params) {
       if (args.length === 0) {
         throw new CommandError(
-          `${this.usage()} <command> | Missing command. Available commands: ${this.availableCommands().join(
+          `Missing command. Available commands: ${this.availableCommands().join(
             ", "
-          )}`
+          )}`,
+          [`Usage: ${this.usage()} <command>`]
         );
       }
 
