@@ -139,7 +139,7 @@ export function newAcitivies(
   old: ActivityItem[],
   curr: ActivityItem[]
 ): ActivityItem[] {
-  let out: ActivityItem[] = [];
+  const out: ActivityItem[] = [];
 
   const oldIds = new Set(old.map((a) => a.id));
 

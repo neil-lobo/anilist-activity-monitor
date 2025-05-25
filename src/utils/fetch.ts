@@ -6,7 +6,9 @@ export class HTTPResponse {
   status: number | null;
 
   constructor(data: string, error: string, status: number | null) {
-    (this.data = data), (this.error = error), (this.status = status);
+    this.data = data;
+    this.error = error;
+    this.status = status;
   }
 }
 

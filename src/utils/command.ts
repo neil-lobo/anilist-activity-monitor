@@ -78,7 +78,7 @@ export class Command {
         throw new CommandError(this.usage());
       }
 
-      let _args: { [k: string]: string } = {};
+      const _args: { [k: string]: string } = {};
       for (let i = 0; i < keys.length; i++) {
         _args[keys[i]] = vals[i];
       }
