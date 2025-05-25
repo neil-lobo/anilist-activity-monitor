@@ -4,6 +4,10 @@ import { settings } from "./settings";
 
 // TODO: jsdoc
 
+/**
+ * @throws {CommandError}
+ * @throws {Error}
+ */
 export function addBroadcastChannel(channelName: string) {
   channelName = channelName.toLowerCase();
 
@@ -24,6 +28,10 @@ export function addBroadcastChannel(channelName: string) {
   settings.setSetting("broadcastChannels", channels);
 }
 
+/**
+ * @throws {CommandError}
+ * @throws {Error}
+ */
 export function removeBroadcastChannel(channelName: string) {
   channelName = channelName.toLowerCase();
 

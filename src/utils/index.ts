@@ -16,11 +16,23 @@ export function message(msg: string): string {
 // TODO: pure JS impl
 // in the lua impl, encode('{}') results in '[]'
 export const JSON = {
+  /**
+   * @throws {Error}
+   */
   stringify: encode,
+  /**
+   * @throws {Error}
+   */
   parse: decode,
 };
 
 export const fs = {
+  /**
+   * @throws {Error}
+   */
   read: read,
+  /**
+   * @throws {Error}
+   */
   write: write,
 };

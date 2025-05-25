@@ -89,6 +89,9 @@ export type GetActivityResponse = {
   };
 };
 
+/**
+ * @throws {Error}
+ */
 export async function getActivities(): Promise<ActivityItem[]> {
   const token = settings.getSetting("token");
   if (!token) {

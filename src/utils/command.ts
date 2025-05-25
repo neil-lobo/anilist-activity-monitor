@@ -25,6 +25,10 @@ export type CommandParams = {
     }
   | {
       args?: string[];
+      /**
+       * @throws {CommandError}
+       * @throws {Error}
+       */
       action: (
         ctx: CommandContext,
         args: { [k: string]: string }
@@ -38,6 +42,10 @@ export class Command {
     this.params = params;
   }
 
+  /**
+   * @throws {CommandError}
+   * @throws {Error}
+   */
   async run(ctx: CommandContext, args: string[]) {
     if ("subcommands" in this.params) {
       if (args.length === 0) {
@@ -87,6 +95,9 @@ export class Command {
     }
   }
 
+  /**
+   * @throws {Error}
+   */
   availableCommands(): string[] {
     if ("subcommands" in this.params) {
       return this.params.subcommands(this).map((c) => c.params.command);

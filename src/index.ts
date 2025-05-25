@@ -161,6 +161,9 @@ const COMMAND = new Command({
   ],
 });
 
+/**
+ * @throws {Error}
+ */
 async function startup() {
   starting = true;
   try {
@@ -226,7 +229,12 @@ function registerEvents() {
     };
 
     COMMAND.run(_ctx, args).catch((err) => {
-      log(JSON.stringify(err));
+      try {
+        log(JSON.stringify(err));
+      } catch (err) {
+        log("could not JSON.stringify error:");
+        log(err);
+      }
 
       if (err instanceof CommandError) {
         reply(`Command error: ${err.message}`);
@@ -244,32 +252,34 @@ function registerEvents() {
   });
 
   c2.register_callback(c2.EventType.CompletionRequested, (event) => {
-    if (
-      event.is_first_word &&
-      `/${COMMAND.params.command}`.startsWith(event.query)
-    ) {
-      return {
-        values: [`/${COMMAND.params.command} `],
-        hide_others: false,
-      };
-    }
+    // for whatever reason, chatterino crashes if something throws in this callback
+    try {
+      if (
+        event.is_first_word &&
+        `/${COMMAND.params.command}`.startsWith(event.query)
+      ) {
+        return {
+          values: [`/${COMMAND.params.command} `],
+          hide_others: false,
+        };
+      }
 
-    if (
-      event.full_text_content.split(" ")[0] !== `/${COMMAND.params.command}`
-    ) {
-      return {
-        hide_others: false,
-        values: [],
-      };
-    }
+      if (
+        event.full_text_content.split(" ")[0] !== `/${COMMAND.params.command}`
+      ) {
+        return {
+          hide_others: false,
+          values: [],
+        };
+      }
 
-    const chain = event.full_text_content
-      .trimEnd()
-      .slice(1)
-      .split(" ")
-      .slice(1, -1);
+      const chain = event.full_text_content
+        .trimEnd()
+        .slice(1)
+        .split(" ")
+        .slice(1, -1);
 
-    /*
+      /*
     Need to traverse this tree following `chain`. If `chain` is not completely consumed, there is no autocomplete.
     If `chain` *is* consumed, attempt to match `event.query` with the next possible subcommand names
 
@@ -281,53 +291,61 @@ function registerEvents() {
     
     */
 
-    let curr: Command = COMMAND;
-    for (const _command of chain) {
-      let availableCommands;
-      try {
-        availableCommands = curr.availableCommands();
-      } catch (err) {
-        return {
-          values: [],
-          hide_others: false,
-        };
-      }
+      let curr: Command = COMMAND;
+      for (const _command of chain) {
+        let availableCommands;
+        try {
+          availableCommands = curr.availableCommands();
+        } catch (err) {
+          return {
+            values: [],
+            hide_others: false,
+          };
+        }
 
-      if (availableCommands.includes(_command)) {
-        if ("subcommands" in curr.params) {
-          const c = curr.params
-            .subcommands(curr)
-            .find((c) => c.params.command === _command);
+        if (availableCommands.includes(_command)) {
+          if ("subcommands" in curr.params) {
+            const c = curr.params
+              .subcommands(curr)
+              .find((c) => c.params.command === _command);
 
-          if (!c) {
+            if (!c) {
+              // this should be unreachable
+              throw new Error("assert failed");
+            }
+
+            curr = c;
+          } else {
             // this should be unreachable
             throw new Error("assert failed");
           }
-
-          curr = c;
         } else {
-          // this should be unreachable
-          throw new Error("assert failed");
-        }
-      } else {
-        return {
-          values: [],
-          hide_others: false,
-        };
-      }
-    }
-
-    try {
-      for (const _command of curr.availableCommands()) {
-        if (_command.startsWith(event.query)) {
           return {
-            values: [`${_command} `],
+            values: [],
             hide_others: false,
           };
         }
       }
+
+      try {
+        for (const _command of curr.availableCommands()) {
+          if (_command.startsWith(event.query)) {
+            return {
+              values: [`${_command} `],
+              hide_others: false,
+            };
+          }
+        }
+      } catch (err) {
+        log("no more subcommands to complete");
+      }
     } catch (err) {
-      log("no more subcommands to complete");
+      try {
+        log(JSON.stringify(err));
+      } catch (err) {
+        log("could not JSON.stringify error:");
+        log(err);
+      }
     }
 
     return {

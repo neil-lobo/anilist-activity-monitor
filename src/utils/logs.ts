@@ -1,13 +1,13 @@
-import { fs, JSON } from ".";
+import { settings } from "./settings";
 
 export function log(...data: any) {
   c2.log(c2.LogLevel.Debug, ...data);
 }
 
 export function debugLog(...data: any) {
-  const settings = JSON.parse(fs.read("settings.json"));
+  const debug = settings.getSetting("debug");
 
-  if (settings.debug) {
+  if (debug) {
     log("< DEBUG >", ...data);
   }
 }

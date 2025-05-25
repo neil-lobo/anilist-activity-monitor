@@ -7,6 +7,9 @@ class Settings<K extends Setting> {
   initialized: boolean;
   keys: Partial<K>;
 
+  /**
+   * @throws {Error}
+   */
   constructor() {
     this.initialized = false;
     this.keys = {};
@@ -18,6 +21,7 @@ class Settings<K extends Setting> {
   // TODO: this throws
   /**
    * Write empty settings file if there is none found
+   * @throws {Error}
    */
   private init() {
     try {
@@ -55,7 +59,7 @@ class Settings<K extends Setting> {
    * Set setting by key
    * @param key Setting key
    * @param value Setting value
-   * @throws
+   * @throws {Error}
    */
   setSetting<T extends keyof typeof this.keys>(
     key: T,
@@ -75,19 +79,15 @@ class Settings<K extends Setting> {
 
   /**
    * Load settings file into object
+   * @throws {Error}
    */
   loadSettings() {
-    try {
-      // TODO: let this throw
-      this.keys = JSON.parse(fs.read("settings.json"));
-    } catch (err) {
-      this.keys = {};
-    }
+    this.keys = JSON.parse(fs.read("settings.json"));
   }
 
   /**
    * Write settings object to disk
-   * @throws
+   * @throws {Error}
    */
   flushSettings() {
     fs.write("settings.json", JSON.stringify(this.keys));
